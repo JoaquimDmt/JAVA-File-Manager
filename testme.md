@@ -1,2 +1,0 @@
-Salut mec!
-Cool.

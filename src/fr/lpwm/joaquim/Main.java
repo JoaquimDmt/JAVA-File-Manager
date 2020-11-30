@@ -2,6 +2,7 @@ package fr.lpwm.joaquim;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 // import java.nio.file.LinkOption;
 // import java.nio.file.Path;
 // import java.nio.file.Paths;
@@ -44,27 +45,35 @@ public class Main {
         menu(filesContainer, file);
     }
 
-    public static void menu(File filesContainer, String file) {
+    public static void menu(File filesContainer, String file) throws IOException {
         System.out.println("\n\033[1;35mQue souhaitez vous faire avec " + file + " ?\033[0m");
         System.out
-                .println("1. Lire ce fichier" + "\n2. Lire ce fichier à l'envers" + "\n3. Lire le palindrome du fichier"
-                        + "\n4. Comparer à un autre fichier" + "\n5. Changer de fichier" + "\n6. Quitter");
+            .println(
+                "1. Ecrire dans ce fichier" +
+                "\n2. Lire ce fichier" +
+                "\n3. Lire ce fichier à l'envers" +
+                "\n4. Comparer à un autre fichier" +
+                "\n5. Informations sur le fichier" +
+                "\n6. Changer de fichier" +
+                "\n7. Quitter\033[0;94m"
+            );
         int choix = input.nextInt();
+        System.out.println("\033[0;37m");
         switch (choix) {
             case 1:
-                // Fichier.read(file);
+                Fichier.write(filesContainer, file);
                 break;
             case 2:
-                // Fichier.readReverse(file);
+                Fichier.read(filesContainer, file);
                 break;
             case 3:
-                // Fichier.readPalindrome(file);
+                // Fichier.readReverse(file);
                 break;
             case 4:
                 // Fichier.compare(file);
                 break;
             case 5:
-                // Fichier.write(file);
+                // Fichier.getInfo(file);
                 break;
             case 6:
                 try {
