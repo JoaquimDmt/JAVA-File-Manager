@@ -9,10 +9,10 @@ package fr.lpwm.joaquim;
 
 public interface LecteurFichier {
 
-    public boolean exists(String fileName);
+    // public boolean exists(String fileName);
 
     public void affiche(String fileName);
 
-    public void compare(String fileName1, String fileName2);
+    // public void compare(String fileName1, String fileName2);
     
 }

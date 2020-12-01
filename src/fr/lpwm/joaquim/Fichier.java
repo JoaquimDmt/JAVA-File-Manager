@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +24,7 @@ import java.util.Scanner;
  * copie/effacement (exeptions à gérer) fermer fichiers ouverts ?
  */
 
-public abstract class Fichier implements LecteurFichier {
+public abstract class Fichier implements LecteurFichier, LecteurReverse {
 
     static Scanner input = new Scanner(System.in);
 
@@ -61,28 +62,48 @@ public abstract class Fichier implements LecteurFichier {
         File fichier = new File(filesContainer, file);
         boolean writing = true;
 
+        if (fichier.length() != 0) {
+            System.out.println("Ce fichier contient déjà quelque-chose, voulez-vous vraiment réécrire par dessus ? (O/N)");
+            String overwrite = input.next();
+            if (overwrite.equalsIgnoreCase("N")){
+                return;
+            }
+        }
+
         try {
             fileInputStream = new FileInputStream(fichier);
             FileWriter fileWriter = new FileWriter(fichier);
             BufferedWriter bw = new BufferedWriter(fileWriter);
 
-            System.out.println("\033[1;36mVous pouvez commencer à écrire dans \033[0;33m"+file+"\033[1;36m :\033[0m");
+            System.out.println("\033[1;36mVous pouvez commencer à écrire dans \033[0;33m"+file);
             while (writing == true) {
+                System.out.println("\033[1;36mEntrez votre texte :\033[0m");
                 String text = input.next();
                 bw.write(text);
+
                 System.out.println("\033[1;36mNouvelle ligne ?\033[0m");
-                // boolean newLine = input.nextBoolean();
-                // if(newLine == true) {
-                //     writing = true;
-                //     bw.newLine();
-                // } else if (newLine == false){
-                //     writing = false;
-                // }
-                writing=false;
+                String newLine = input.next();
+
+                if (newLine.equalsIgnoreCase("oui") || newLine.equalsIgnoreCase("yes") || newLine.equalsIgnoreCase("O") || newLine.equalsIgnoreCase("Y")) {
+                    bw.newLine();//revient à la ligne dans le fichier
+                } else if (newLine.equalsIgnoreCase("non") || newLine.equalsIgnoreCase("no") || newLine.equalsIgnoreCase("N")){
+                    writing = false;
+                } else {
+                    while (!newLine.equalsIgnoreCase("oui") && !newLine.equalsIgnoreCase("yes") && !newLine.equalsIgnoreCase("O") && !newLine.equalsIgnoreCase("Y") && !newLine.equalsIgnoreCase("non") && !newLine.equalsIgnoreCase("no") && !newLine.equalsIgnoreCase("N")){
+                        System.out.println("\033[0;36mVeuillez entrer une réponse correcte : (oui/non, yes/no, O/N, Y/N)\033[0m");
+                        newLine = input.next();
+                    }
+                    try {
+                        if (newLine.equalsIgnoreCase("oui") || newLine.equalsIgnoreCase("yes") || newLine.equalsIgnoreCase("O") || newLine.equalsIgnoreCase("Y")) {
+                            bw.newLine();//revient à la ligne dans le fichier
+                        } else if (newLine.equalsIgnoreCase("non") || newLine.equalsIgnoreCase("no") || newLine.equalsIgnoreCase("N")){
+                            writing = false;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-            bw.write("Salut mec!");
-            bw.newLine();
-            bw.write("Cool.");
             bw.close();
             fileWriter.close();
         } catch (FileNotFoundException e) {
@@ -93,6 +114,11 @@ public abstract class Fichier implements LecteurFichier {
             }
         }
     }
+
+    /**
+    * Fonction Lire Contenu Fichier
+    *
+    */
 
     public static void read(File filesContainer, String file) throws FileNotFoundException, UnsupportedEncodingException {
         
@@ -129,8 +155,31 @@ public abstract class Fichier implements LecteurFichier {
         }
     }
 
-    /*
+
+    /**
+     * Fonction Informations fichier
+     * 
+     * @throws FileNotFoundException
+     *
+     */
+    public static void getInfo(File filesContainer, String fileName) throws FileNotFoundException {
+        File fichier = new File(filesContainer, fileName);
+        if (fichier.exists()) {
+            System.out.println("\033[4;37mFile name:\033[0;33m " + fichier.getName());
+            System.out.println("\033[4;37mPath:\033[0;32m " + fichier.getPath());
+            System.out.println("\033[4;37mAbsolute path:\033[0;32m " + fichier.getAbsolutePath());
+            System.out.println("\033[4;37mWriteable:\033[0m " + fichier.canWrite());
+            System.out.println("\033[4;37mReadable:\033[0m " + fichier.canRead());
+            System.out.println("\033[4;37mFile size in bytes:\033[0m " + fichier.length());
+        } else {
+            System.out.println("\033[0;31mThe file does not exist.\033[0m");
+            throw new FileNotFoundException();
+        }
+    }
+
+    /**
     * Fonction Liste Fichiers (et dossiers)
+    *
     */
     public static void directoryFiles(File filesContainer) throws FileNotFoundException {
         
@@ -169,4 +218,43 @@ public abstract class Fichier implements LecteurFichier {
         }  
     }
     
+
+    public static void compare(String file1, String file2) throws IOException
+    {	
+        BufferedReader reader1 = new BufferedReader(new FileReader(file1));
+        BufferedReader reader2 = new BufferedReader(new FileReader(file2));
+         
+        String line1 = reader1.readLine();
+        String line2 = reader2.readLine();
+         
+        boolean areEqual = true;
+        int lineNum = 1;
+         
+        while (line1 != null || line2 != null) {
+
+            if(line1 == null || line2 == null) {
+                areEqual = false;
+                break;
+            } 
+            else if(! line1.equalsIgnoreCase(line2)) {
+                areEqual = false; 
+                break;
+            }
+             
+            line1 = reader1.readLine(); 
+            line2 = reader2.readLine();
+            lineNum++;
+        }
+         
+        if(areEqual) {
+            System.out.println("Two files have same content.");
+        }
+        else {
+            System.out.println("Two files have different content. They differ at line "+lineNum);
+            System.out.println("File1 has "+line1+" and File2 has "+line2+" at line "+lineNum);
+        }
+         
+        reader1.close();
+        reader2.close();
+    }
 }

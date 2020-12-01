@@ -6,9 +6,8 @@ package fr.lpwm.joaquim;
  * affiche le fichier à l'envers sur l'écran : lignes /
  */
 
-public interface LecteurReverse extends LecteurFichier{
+public interface LecteurReverse{
 
-    @Override
     void affiche(String fileName);
     
 }

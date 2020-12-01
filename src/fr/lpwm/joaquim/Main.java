@@ -41,12 +41,12 @@ public class Main {
         String file = input.next();
 
         Fichier.create(filesContainer, file);
-        // Fichier.directoryFiles(filesContainer);
+
         menu(filesContainer, file);
     }
 
     public static void menu(File filesContainer, String file) throws IOException {
-        System.out.println("\n\033[1;35mQue souhaitez vous faire avec " + file + " ?\033[0m");
+        System.out.println("\n\033[1;35mQue souhaitez vous faire avec \033[0;33m" + file + "\033[1;35m ?\033[0m");
         System.out
             .println(
                 "1. Ecrire dans ce fichier" +
@@ -54,11 +54,13 @@ public class Main {
                 "\n3. Lire ce fichier à l'envers" +
                 "\n4. Comparer à un autre fichier" +
                 "\n5. Informations sur le fichier" +
-                "\n6. Changer de fichier" +
-                "\n7. Quitter\033[0;94m"
+                "\n6. Liste des fichiers" +
+                "\n7. Changer de fichier" +
+                "\n8. Créer un nouveau fichier" +
+                "\n9. Quitter\033[0;94m"
             );
         int choix = input.nextInt();
-        System.out.println("\033[0;37m");
+        System.out.println("\033[0m");
         switch (choix) {
             case 1:
                 Fichier.write(filesContainer, file);
@@ -70,10 +72,17 @@ public class Main {
                 // Fichier.readReverse(file);
                 break;
             case 4:
-                // Fichier.compare(file);
+                System.out.println("Ecrire le nom du fichier avec lequel vous souhaitez comparer\033[0;33m "+file+" \033[0m:\033[0;94m");
+                String fileName2 = input.next();
+                File file2 = new File(filesContainer, fileName2);
+                if (!file2.exists()) {
+                    System.out.println("\033[0;31mAucun fichier n'existe sous ce nom, vous pouvez vérifier la liste des fichiers à l'aide de l'\033[4;31moption 6 du menu\033[0m");
+                    break;
+                }
+                // Fichier.compare(file, fileName2);
                 break;
             case 5:
-                // Fichier.getInfo(file);
+                Fichier.getInfo(filesContainer, file);
                 break;
             case 6:
                 try {
@@ -82,10 +91,29 @@ public class Main {
                     e.printStackTrace();
                 }
                 break;
-        
+            case 7:
+                //Accéder au menu d'un autre fichier existant
+                System.out.println("Ecrire le nom de fichier avec l'extension :\033[0;94m");
+                String otherfile = input.next();
+                File fichier = new File(filesContainer, otherfile);
+                if (fichier.exists()) {
+                    menu(filesContainer, otherfile);
+                }
+                else {
+                    System.out.println("\033[0;31mAucun fichier n'existe sous ce nom, vous pouvez vérifier la liste des fichiers à l'aide de l'\033[4;31moption 6 du menu\033[0m");
+                }
+                break;
+            case 8:
+                System.out.println("Ecrire le nom du nouveau fichier avec l'extension :\033[0;94m");
+                String newfile = input.next();
+                Fichier.create(filesContainer, newfile);
+                break;
+            case 9:
+                System.exit(0); //un simple return n'est pas bon car menus imbriqués
             default:
                 break;
         }
+        menu(filesContainer, file);
     }
 
 	// private static void getFileExtension(File file) {
