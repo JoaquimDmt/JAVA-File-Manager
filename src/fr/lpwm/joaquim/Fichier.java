@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -272,9 +271,12 @@ public abstract class Fichier {
     * @param fileName2
     */
 
-    public static void compare(String file1, String file2) throws IOException {
-        BufferedReader reader1 = new BufferedReader(new FileReader(file1));
-        BufferedReader reader2 = new BufferedReader(new FileReader(file2));
+    public static void compare(File filesContainer, String fileName1, String fileName2) throws IOException {
+        File fichier1 = new File(filesContainer, fileName1);
+        File fichier2 = new File(filesContainer, fileName2);
+        
+        BufferedReader reader1 = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filesContainer, fileName1)), "UTF-8"));
+        BufferedReader reader2 = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filesContainer, fileName2)), "UTF-8"));
          
         String line1 = reader1.readLine();
         String line2 = reader2.readLine();
@@ -299,11 +301,28 @@ public abstract class Fichier {
         }
          
         if(areEqual) {
-            System.out.println("Two files have same content.");
+            System.out.println("\033[0mLes deux fichiers ont le même contenu.");
+            
+            if (fichier1.length() == 0 || fichier2.length() == 0){
+                System.out.println("Ils sont tous les deux vides.");
+            }
         }
         else {
-            System.out.println("Two files have different content. They differ at line "+lineNum);
-            System.out.println("File1 has "+line1+" and File2 has "+line2+" at line "+lineNum);
+            System.out.println("\033[0mLes deux fichiers n'ont pas le même contenu. Ils diffèrent à la ligne "+lineNum+".");
+            System.out.println("\033[0;33m"+fileName1+"\033[0m contient \""+line1+"\" tandis que \033[0;33m"+fileName2+"\033[0m contient \""+line2+"\" à la ligne "+lineNum);
+
+            if (fichier1.length() == fichier2.length()){
+                System.out.println("\033[0;33m"+fileName1+"\033[0m pèse le même poids que \033[0;33m"+fileName2+"\033[0m : "+fichier1.length()+" bytes");
+
+            } else if (fichier1.length() > fichier2.length()){
+                System.out.println("\033[0;33m"+fileName1+"\033[0m contient plus de texte que \033[0;33m"+fileName2);
+
+            } else if (fichier1.length() < fichier2.length()){
+                System.out.println("\033[0;33m"+fileName1+"\033[0m contient moins de texte que \033[0;33m"+fileName2);
+
+            } else {
+                throw new IOException();
+            }
         }
          
         reader1.close();

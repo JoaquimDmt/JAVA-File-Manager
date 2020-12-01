@@ -12,12 +12,18 @@ import java.util.Scanner;
  * 
  * Main
  * 
- * Interface de lecteur de fichiers Plusieurs sous-classes pour différents types
- * de fichiers (pour choix type html, txt) Classe abstraite pour définir
- * méthodes fixes Classe affiche fichier à l'envers (lignes) Classe affiche
- * fichier de manière palindromique ??? Comparateur de fichiers "diff" ??
+ * Demande le nom d'un fichier et propose toutes les options en lien avec la gestion de ce fichier. Appuyez sur les touches correspondantes au menu pour lancer les fonctions souhaitées :
  * 
- * 
+ * 1. Ecrire dans ce fichier
+ * 2. Lire ce fichier
+ * 3. Lire ce fichier à l'envers
+ * 4. Comparer à un autre fichier
+ * 5. Informations sur le fichier
+ * 6. Liste des fichiers
+ * 7. Changer de fichier
+ * 8. Crer un nouveau fichier
+ * 9. Supprimer le fichier
+ * 0. Quitter
  */
 
 public class Main {
@@ -101,7 +107,7 @@ public class Main {
                         System.out.println("\033[0;31mAucun fichier n'existe sous ce nom, vous pouvez vérifier la liste des fichiers à l'aide de l'\033[4;31moption 6 du menu\033[0m");
                         break;
                     }
-                    Fichier.compare(file, fileName2);
+                    Fichier.compare(filesContainer, file, fileName2);
                     break;
                 case 5:
                     Fichier.getInfo(filesContainer, file);

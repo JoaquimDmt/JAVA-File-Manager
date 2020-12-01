@@ -16,7 +16,7 @@ You can :
 
 ## Getting Started
 
-To run the program, simply go in dist folder and execute the following command : `java fr.lpwm.joaquim.Main`
+To run the program, simply go in **dist** folder and execute the following command : `java fr.lpwm.joaquim.Main`.  
 You can also just run the java files in src, way to do depending on your IDE (ex: VisualStudioCode -> F5 in Main.java).
 
 If you make changes in src files, then you can recompile everything with `javac -encoding utf8 *.java` and place the new .class files in dist/fr/lpwm/joaquim folder.
