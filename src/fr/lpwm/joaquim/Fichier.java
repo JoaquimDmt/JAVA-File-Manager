@@ -17,16 +17,21 @@ import java.util.Scanner;
 /**
  * Fichier
  * 
- * test d'existence créer et/ou écrire dedant fichier vide ecrire dedant fichier
- * non vide demander si on veut ecraser ou ecrire après
- * 
- * ouvrir et lire contenu (lecteurfichier) distinction fichier/répertoire
- * copie/effacement (exeptions à gérer) fermer fichiers ouverts ?
+ * Méthode create() -> test existence + création fichier
+ * Méthode write() -> écrire contenu texte dans fichier
+ * Méthode getInfo() -> obtenir nom fichier, path, size, ...
+ * Méthode directoryFiles() -> liste fichiers & dossiers
+ * Méthode delete() -> suppression fichier
  */
 
-public abstract class Fichier implements LecteurFichier, LecteurReverse {
+public abstract class Fichier {
 
     static Scanner input = new Scanner(System.in);
+
+    /**
+     * Fonction Créer Fichier
+     *
+     */
 
     public static void create(File filesContainer, String filename) throws IOException {
 
@@ -49,15 +54,20 @@ public abstract class Fichier implements LecteurFichier, LecteurReverse {
         } finally {
 
             // indiquer l'emplacement du fichier créé ou déjà existant
-
             System.out.println("\033[4;37mChemin absolu:\033[0m " + fichier.getAbsolutePath() + "\n");
-            // getAbsoluteBath similaire à
             // Path path = Paths.get("fichiers/fichier1.txt");
             // System.out.println(path.toRealPath(LinkOption.NOFOLLOW_LINKS));
         }
     }
 
-    public static void write(File filesContainer, String file) throws IOException {
+
+    /**
+     * Fonction Ecrire dans Fichier
+     *
+     * Permet d'écrire dans un fichier texte (overriden in FichierHtml)
+     */
+
+    protected static void write(File filesContainer, String file) throws IOException {
         FileInputStream fileInputStream = null;
         File fichier = new File(filesContainer, file);
         boolean writing = true;
@@ -116,8 +126,9 @@ public abstract class Fichier implements LecteurFichier, LecteurReverse {
     }
 
     /**
-    * Fonction Lire Contenu Fichier
+    * Fonction Lire contenu Fichier
     *
+    * TODO: need to be removed -> only in sub classes implementing LecteurFichier
     */
 
     public static void read(File filesContainer, String file) throws FileNotFoundException, UnsupportedEncodingException {
@@ -132,10 +143,42 @@ public abstract class Fichier implements LecteurFichier, LecteurReverse {
             try {
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 String line;
-                ArrayList<String> lineslist = new ArrayList<>();
                 
                 while ((line = bufferedReader.readLine()) != null){
                     System.out.println(line);
+                }
+                bufferedReader.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println("\033[41mFichier vide\033[0m");
+        }
+    }
+
+    /**
+    * Fonction Lire Fichier à l'envers (en terme de lignes)
+    *
+    * TODO: need to be removed -> only in sub classes implementing LecteurReverse
+    */
+    
+    public static void readReverse(File filesContainer, String file) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        File fichier = new File(filesContainer, file);
+
+        if (fichier.length() != 0) {
+            FileInputStream fileInputStream = new FileInputStream(fichier);
+        
+            //specify encoding explicitly
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            try {
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String line;
+                ArrayList<String> lineslist = new ArrayList<>();
+                
+                while ((line = bufferedReader.readLine()) != null){
                     lineslist.add(line);
                 }
                 bufferedReader.close();
@@ -177,8 +220,9 @@ public abstract class Fichier implements LecteurFichier, LecteurReverse {
         }
     }
 
+
     /**
-    * Fonction Liste Fichiers (et dossiers)
+    * Fonction Listage Fichiers (et dossiers)
     *
     */
     public static void directoryFiles(File filesContainer) throws FileNotFoundException {
@@ -217,16 +261,24 @@ public abstract class Fichier implements LecteurFichier, LecteurReverse {
             }
         }  
     }
-    
 
-    public static void compare(String file1, String file2) throws IOException
-    {	
+
+    /**
+    * Fonction Comparaison Fichier avec un autre
+    *
+    * TODO: need to be removed -> only in sub classes implementing LecteurReverse
+    *
+    * @param fileName1
+    * @param fileName2
+    */
+
+    public static void compare(String file1, String file2) throws IOException {
         BufferedReader reader1 = new BufferedReader(new FileReader(file1));
         BufferedReader reader2 = new BufferedReader(new FileReader(file2));
          
         String line1 = reader1.readLine();
         String line2 = reader2.readLine();
-         
+
         boolean areEqual = true;
         int lineNum = 1;
          
@@ -256,5 +308,31 @@ public abstract class Fichier implements LecteurFichier, LecteurReverse {
          
         reader1.close();
         reader2.close();
+    }
+
+
+    /**
+    * Fonction Suppression Fichier
+    *
+    */
+
+    public static void delete(File filesContainer, String file) {
+        File fichier = new File(filesContainer, file);
+
+        System.out.println("\033[0;91mEtes-vous bien sûr de vouloir supprimer le fichier \033[0;33m"+ fichier.getName()+"\033[0;91m ? (O/N)\033[0;94m");
+
+        String confirmation = input.next();
+
+        if (confirmation.equalsIgnoreCase("N")){
+            System.out.println("\033[0mLe fichier n'a pas été supprimé, retour au menu.");
+            return;
+        }
+        
+        if (fichier.delete()) { 
+            System.out.println("\033[0;31mFichier \033[0;33m" + fichier.getName()+"\033[0;31m supprimé ! Fin du programme.\033[0m");
+            System.exit(0);
+        } else {
+            System.out.println("Failed to delete the file.");
+        }
     }
 }
